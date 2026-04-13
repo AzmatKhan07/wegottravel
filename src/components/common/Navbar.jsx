@@ -27,7 +27,7 @@ const Navbar = () => {
                 <Plane className="h-6 w-6" />
               </div>
               <span className="text-xl font-bold tracking-tight text-foreground">
-                WeGot<span className="text-primary">Travel</span>
+                Super<span className="text-primary">Travel</span>
               </span>
             </Link>
           </div>

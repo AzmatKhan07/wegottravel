@@ -43,7 +43,7 @@ function Footer() {
           {/* Brand Column (Spans 4 columns on large screens) */}
           <div className="lg:col-span-4 flex flex-col pr-0 lg:pr-8">
             <h2 className="text-[28px] md:text-3xl font-black text-foreground mb-5 tracking-tight flex items-center">
-              Wegottravel<span className="text-primary ml-1">.</span>
+              Super<span className="text-primary ml-1">Travel</span>
             </h2>
             <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-sm mb-8 font-medium">
               Redefining the premium travel experience. Seamless digital

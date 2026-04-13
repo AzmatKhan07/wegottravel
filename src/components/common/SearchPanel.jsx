@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
 import assets from "@/assets/assets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,6 +31,41 @@ const tabData = [
 export function DestinationPickerField({ placeholder = "Where to?" }) {
   const [destination, setDestination] = React.useState("");
   const [open, setOpen] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const isSelecting = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!destination || destination.length < 2 || isSelecting.current) {
+      isSelecting.current = false;
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&addressdetails=1&limit=6`,
+        );
+        const data = await response.json();
+        setSuggestions(data);
+      } catch (error) {
+        console.error("Error fetching suggestions:", error);
+      } finally {
+        setLoading(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [destination]);
+
+  const handleSelect = (name) => {
+    isSelecting.current = true;
+    setDestination(name);
+    setSuggestions([]);
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,44 +80,108 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
             type="text"
             placeholder={placeholder}
             value={destination}
-            onChange={(e) => setDestination(e.target.value)}
+            onChange={(e) => {
+              isSelecting.current = false;
+              setDestination(e.target.value);
+              if (!open) setOpen(true);
+            }}
             onFocus={() => setOpen(true)}
             className="bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground/70 w-full font-semibold focus:ring-0"
           />
         </PopoverTrigger>
+        {loading && (
+          <Loader2 className="w-4 h-4 animate-spin text-primary absolute right-0" />
+        )}
       </div>
 
       <PopoverContent
-        className="w-[380px] p-3 z-50 rounded-[20px] shadow-2xl"
+        className="w-[400px] p-3 z-50 rounded-[24px] shadow-2xl border-border bg-card/95 backdrop-blur-xl"
         align="start"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <h4 className="font-bold text-foreground mb-3 px-2">
-          Select a popular airport/region
-        </h4>
-        <div className="flex flex-col max-h-[320px] overflow-y-auto">
-          {assets.popularDestinations.map((dest, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setDestination(dest.region);
-                setOpen(false);
-              }}
-              className="flex items-center w-full text-left p-2.5 rounded-xl hover:bg-secondary/10 transition-colors group"
-            >
-              <div className="bg-muted group-hover:bg-background border border-transparent group-hover:border-border/50 rounded-xl p-3 mr-4 shadow-sm transition-colors flex shrink-0 items-center justify-center">
-                <MapPin className="w-5 h-5 text-foreground" strokeWidth={2} />
+        <div className="space-y-1">
+          {destination.length < 2 ? (
+            <>
+              <h4 className="font-bold text-[13px] text-muted-foreground uppercase tracking-wider mb-2 px-3 pt-2">
+                Popular Destinations
+              </h4>
+              <div className="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar">
+                {assets.popularDestinations.map((dest, idx) => (
+                  <button
+                    key={idx}
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevent input blur
+                      handleSelect(dest.region);
+                    }}
+                    className="flex items-center w-full text-left p-3 rounded-xl hover:bg-secondary/20 transition-all group"
+                  >
+                    <div className="bg-muted group-hover:bg-primary/10 border border-transparent group-hover:border-primary/20 rounded-xl p-2.5 mr-4 shadow-sm transition-colors flex shrink-0 items-center justify-center">
+                      <MapPin
+                        className="w-5 h-5 text-muted-foreground group-hover:text-primary"
+                        strokeWidth={2}
+                      />
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="font-bold text-foreground text-[15px] truncate">
+                        {dest.region}
+                      </span>
+                      <span className="text-xs text-muted-foreground mt-0.5 truncate">
+                        {dest.airports}
+                      </span>
+                    </div>
+                  </button>
+                ))}
               </div>
-              <div className="flex flex-col overflow-hidden">
-                <span className="font-semibold text-foreground text-[15px] truncate">
-                  {dest.region}
-                </span>
-                <span className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {dest.airports}
-                </span>
+            </>
+          ) : (
+            <>
+              <h4 className="font-bold text-[13px] text-muted-foreground uppercase tracking-wider mb-2 px-3 pt-2">
+                Search Results
+              </h4>
+              <div className="flex flex-col max-h-[320px] overflow-y-auto custom-scrollbar">
+                {suggestions.length > 0 ? (
+                  suggestions.map((item, idx) => {
+                    const mainName = item.display_name.split(",")[0];
+                    return (
+                      <button
+                        key={idx}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevent input blur
+                          handleSelect(mainName);
+                        }}
+                        className="flex items-center w-full text-left p-3 rounded-xl hover:bg-secondary/20 transition-all group"
+                      >
+                        <div className="bg-muted group-hover:bg-primary/10 border border-transparent group-hover:border-primary/20 rounded-xl p-2.5 mr-4 shadow-sm transition-colors flex shrink-0 items-center justify-center">
+                          <MapPin
+                            className="w-5 h-5 text-muted-foreground group-hover:text-primary"
+                            strokeWidth={2}
+                          />
+                        </div>
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="font-bold text-foreground text-[15px] truncate">
+                            {mainName}
+                          </span>
+                          <span className="text-[11px] text-muted-foreground mt-0.5 truncate max-w-full">
+                            {item.display_name
+                              .split(",")
+                              .slice(1)
+                              .join(",")
+                              .trim()}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })
+                ) : !loading ? (
+                  <div className="p-8 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      No destinations found for "{destination}"
+                    </p>
+                  </div>
+                ) : null}
               </div>
-            </button>
-          ))}
+            </>
+          )}
         </div>
       </PopoverContent>
     </Popover>
@@ -351,8 +451,8 @@ export default function SearchPanel() {
             </div>
 
             <div className="flex md:block pt-2 md:pt-0 h-full">
-              <Button 
-                onClick={() => navigate('/flights')}
+              <Button
+                onClick={() => navigate("/flights")}
                 className="w-full h-[68px] md:h-full rounded-2xl text-lg md:text-xl font-bold bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-xl shadow-secondary/20 transition-transform active:scale-95"
               >
                 Search Flights
