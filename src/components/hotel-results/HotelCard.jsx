@@ -85,7 +85,7 @@ function HotelCard({ hotel }) {
             Total for {hotel.totalNights} nights
           </p>
           <p className="text-3xl font-black text-foreground">
-            ${hotel.price.toLocaleString()}
+            £{hotel.price.toLocaleString()}
           </p>
           <p className="text-[12px] font-medium text-muted-foreground mt-1">
             Includes taxes & fees

@@ -42,7 +42,7 @@ function FlightFilters({ filters, updateFilters, clearFilters }) {
             Max Price
           </span>
           <span className="text-[15px] font-bold text-primary">
-            ${filters.maxPrice}
+            £{filters.maxPrice}
           </span>
         </div>
         <Slider

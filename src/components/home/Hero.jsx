@@ -4,7 +4,7 @@ import SearchPanel from "@/components/common/SearchPanel";
 
 function Hero() {
   return (
-    <div className="relative w-full h-[600px] md:h-[90vh] flex flex-col items-center justify-center bg-muted overflow-hidden">
+    <div className="relative w-full min-h-[850px] md:h-[90vh] lg:h-[650px] flex flex-col items-center justify-center bg-muted">
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <img

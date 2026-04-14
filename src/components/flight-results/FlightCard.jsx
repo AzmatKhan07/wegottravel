@@ -54,7 +54,7 @@ function FlightCard({ flight }) {
 
         {/* Price & Action */}
         <div className="flex flex-col items-center justify-center w-full md:w-[140px] shrink-0 border-t md:border-t-0 md:border-l border-border/50 pt-6 md:pt-0 pl-0 md:pl-8 mt-2 md:mt-0">
-          <span className="text-3xl md:text-4xl font-black text-primary tracking-tight mb-4">${flight.price}</span>
+          <span className="text-3xl md:text-4xl font-black text-primary tracking-tight mb-4">£{flight.price}</span>
           <button 
             onClick={() => navigate(`/flights/${flight.id}`)}
             className="w-full bg-primary hover:bg-[#004dc9] text-white font-bold text-[13px] uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-md active:scale-95"
