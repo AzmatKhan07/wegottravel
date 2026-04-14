@@ -528,19 +528,20 @@ export default function SearchPanel() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto bg-card p-4 md:p-8 rounded-[40px] shadow-2xl w-full border border-border/10">
+    <div className="max-w-6xl mx-auto bg-card p-4 md:p-8 rounded-[32px] md:rounded-[40px] shadow-2xl w-full border border-border/10">
       <Tabs defaultValue="flights" className="w-full">
         {/* Tabs List */}
         <div className="flex justify-center w-full mb-8">
-          <TabsList className="bg-background border border-border/50 p-1.5 rounded-full h-auto min-h-[56px] flex flex-wrap justify-center items-center shadow-sm">
+          <TabsList className="bg-background border border-border/50 py-5 md:p-8 rounded-full h-auto flex w-full max-w-sm md:max-w-md mx-auto items-center shadow-sm">
             {tabData.map((tab) => (
               <TabsTrigger
                 key={tab.id}
                 value={tab.id}
-                className="flex items-center gap-2.5 capitalize rounded-full px-8 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-[15px] font-bold data-[state=active]:shadow-md text-muted-foreground hover:text-foreground hover:bg-muted/50 data-[state=active]:hover:bg-primary transition-all duration-300 mx-1"
+                className="flex-1 flex items-center justify-center gap-2 capitalize rounded-full px-3 md:px-8 py-4 md:py-7 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-[13px] md:text-[15px] font-bold data-[state=active]:shadow-md text-muted-foreground hover:text-foreground transition-all duration-300"
               >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
+                <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.label.charAt(0)}</span>
               </TabsTrigger>
             ))}
           </TabsList>

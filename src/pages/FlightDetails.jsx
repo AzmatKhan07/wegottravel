@@ -176,7 +176,7 @@ function FlightDetails() {
                     Light
                   </span>
                   <p className="text-3xl font-black text-foreground mb-8">
-                    ${farePrices.Light}
+                    £{farePrices.Light}
                   </p>
                   <ul className="space-y-4 mb-2 text-left w-full">
                     <li className="flex items-center gap-3 text-[13px] font-bold text-foreground">
@@ -213,7 +213,7 @@ function FlightDetails() {
                     Standard
                   </span>
                   <p className="text-3xl font-black text-foreground mb-8">
-                    ${farePrices.Standard}
+                    £{farePrices.Standard}
                   </p>
                   <ul className="space-y-4 mb-2 text-left w-full">
                     <li className="flex items-center gap-3 text-[13px] font-bold text-foreground">
@@ -246,7 +246,7 @@ function FlightDetails() {
                     Flex
                   </span>
                   <p className="text-3xl font-black text-foreground mb-8">
-                    ${farePrices.Flex}
+                    £{farePrices.Flex}
                   </p>
                   <ul className="space-y-4 mb-2 text-left w-full">
                     <li className="flex items-center gap-3 text-[13px] font-bold text-foreground">
@@ -325,7 +325,7 @@ function FlightDetails() {
                       Base Fare ({selectedFare})
                     </span>
                     <span className="text-foreground">
-                      ${currentPrice - 156}.00
+                      £{currentPrice - 156}.00
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-[14px] font-bold">
@@ -346,7 +346,7 @@ function FlightDetails() {
                   </p>
                   <div className="flex items-baseline justify-between">
                     <p className="text-5xl font-black text-foreground tracking-tighter">
-                      ${currentPrice}.00
+                      £{currentPrice}.00
                     </p>
                     <span className="text-[11px] font-bold text-muted-foreground">
                       All taxes included

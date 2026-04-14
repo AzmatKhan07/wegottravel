@@ -45,7 +45,7 @@ function HotelRoomSelector({ rooms, selectedRoom, onSelectRoom }) {
                   </h3>
                   <div className="flex items-baseline gap-1">
                     <span className="text-xl font-black text-primary">
-                      ${room.price}
+                      £{room.price}
                     </span>
                     <span className="text-[11px] font-bold text-muted-foreground uppercase">
                       /Night

@@ -38,8 +38,8 @@ export const deals = [
   {
     id: 1,
     title: "Santorini Escape",
-    originalPrice: "$2,400",
-    discountedPrice: "$1,440",
+    originalPrice: "£2,400",
+    discountedPrice: "£1,440",
     description: "7 Nights • Flight + 5★ Hotel",
     badge: "-40% TODAY",
     image:
@@ -48,8 +48,8 @@ export const deals = [
   {
     id: 2,
     title: "Maldives Serenity",
-    originalPrice: "$4,100",
-    discountedPrice: "$3,250",
+    originalPrice: "£4,100",
+    discountedPrice: "£3,250",
     description: "5 Nights • All-Inclusive Luxury",
     badge: "TRENDING",
     image:
@@ -58,8 +58,8 @@ export const deals = [
   {
     id: 3,
     title: "Parisian Weekend",
-    originalPrice: "$1,200",
-    discountedPrice: "$850",
+    originalPrice: "£1,200",
+    discountedPrice: "£850",
     description: "3 Nights • Boutique Experience",
     badge: "LAST MINUTE",
     image:
@@ -68,8 +68,8 @@ export const deals = [
   {
     id: 4,
     title: "Swiss Alps Retreat",
-    originalPrice: "$3,500",
-    discountedPrice: "$2,800",
+    originalPrice: "£3,500",
+    discountedPrice: "£2,800",
     description: "6 Nights • Ski Resort & Spa",
     badge: "WINTER SPECIAL",
     image:
@@ -218,9 +218,9 @@ export const flightResults = [
 
 export const flightFilters = {
   stops: [
-    { id: "direct", label: "Direct", price: "$840" },
-    { id: "1stop", label: "1 Stop", price: "$620" },
-    { id: "2stops", label: "2+ Stops", price: "$450" },
+    { id: "direct", label: "Direct", price: "£840" },
+    { id: "1stop", label: "1 Stop", price: "£620" },
+    { id: "2stops", label: "2+ Stops", price: "£450" },
   ],
   airlines: [
     { id: "af", label: "Air France" },

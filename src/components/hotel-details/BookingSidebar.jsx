@@ -49,7 +49,7 @@ function BookingSidebar({ selectedRoom, pricePerHour, roomPrice, totalPrice }) {
                   {selectedRoom} (5 nights)
                 </span>
                 <span className="text-[15px] font-black text-foreground">
-                  ${roomPrice.toLocaleString()}
+                  £{roomPrice.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -76,7 +76,7 @@ function BookingSidebar({ selectedRoom, pricePerHour, roomPrice, totalPrice }) {
               </h4>
               <div className="text-right">
                 <p className="text-3xl font-black text-primary">
-                  ${totalPrice.toLocaleString()}
+                  £{totalPrice.toLocaleString()}
                 </p>
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">
                   Fully refundable until Sep 10

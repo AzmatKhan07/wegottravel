@@ -73,7 +73,7 @@ function PackageCard({ pkg }) {
                     From Total
                 </span>
                 <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-foreground">${pkg.price.toLocaleString()}</span>
+                    <span className="text-3xl font-black text-foreground">£{pkg.price.toLocaleString()}</span>
                     <span className="text-[14px] font-bold text-muted-foreground">/ person</span>
                 </div>
             </div>

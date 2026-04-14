@@ -40,8 +40,8 @@ function HotelFilters({ filters, updateFilters, clearFilters }) {
           Price Range
         </h4>
         <div className="flex justify-between items-center mb-4">
-          <span className="text-[14px] font-bold text-foreground">$200</span>
-          <span className="text-[14px] font-bold text-primary">${filters.maxPrice}+</span>
+          <span className="text-[14px] font-bold text-foreground">£200</span>
+          <span className="text-[14px] font-bold text-primary">£{filters.maxPrice}+</span>
         </div>
         <Slider
           defaultValue={[filters.maxPrice]}
