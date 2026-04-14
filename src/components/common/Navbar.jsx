@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Plane, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import assets from "@/assets/assets";
 
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "Flights", path: "/flights" },
   { name: "Hotels", path: "/hotels" },
   { name: "Packages", path: "/packages" },
+  { name: "Contact", path: "/contact" },
 ];
 
 const Navbar = () => {
@@ -23,12 +25,7 @@ const Navbar = () => {
               to="/"
               className="flex items-center gap-2 transition-transform hover:scale-105"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                <Plane className="h-6 w-6" />
-              </div>
-              <span className="text-xl font-bold tracking-tight text-foreground">
-                Super<span className="text-primary">Travel</span>
-              </span>
+              <img className="w-26" src={assets.assets.Logo} alt="logo" />
             </Link>
           </div>
 
@@ -53,15 +50,11 @@ const Navbar = () => {
 
           {/* Action Buttons */}
           <div className="hidden md:flex md:items-center md:gap-4">
-            <Button
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Log in
-            </Button>
-            <Button size="lg" className="uppercase">
-              Register
-            </Button>
+            <Link to="/payment">
+              <Button size="lg" className="uppercase">
+                Make Payment
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -106,12 +99,11 @@ const Navbar = () => {
               ))}
             </div>
             <div className="flex flex-col space-y-3 pt-4 border-t border-border/50">
-              <Button variant="outline" className="w-full justify-center">
-                Log in
-              </Button>
-              <Button className="w-full justify-center rounded-full shadow-lg shadow-primary/20">
-                Book Now
-              </Button>
+              <Link to="/payment" onClick={() => setIsMenuOpen(false)}>
+                <Button className="w-full justify-center rounded-full shadow-lg shadow-primary/20">
+                  Make Payment
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

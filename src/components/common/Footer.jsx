@@ -1,3 +1,4 @@
+import assets from "@/assets/assets";
 import React from "react";
 
 // Inline solid SVGs for premium social connection links (Zero-dependency & crash-proof)
@@ -42,9 +43,9 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16 lg:mb-20">
           {/* Brand Column (Spans 4 columns on large screens) */}
           <div className="lg:col-span-4 flex flex-col pr-0 lg:pr-8">
-            <h2 className="text-[28px] md:text-3xl font-black text-foreground mb-5 tracking-tight flex items-center">
-              Super<span className="text-primary ml-1">Travel</span>
-            </h2>
+            <div className="mb-4">
+              <img src={assets.assets.Logo} alt="" className="w-26" />
+            </div>
             <p className="text-[14px] md:text-[15px] text-muted-foreground leading-relaxed max-w-sm mb-8 font-medium">
               Redefining the premium travel experience. Seamless digital
               concierge services, curated destinations, and unmissable global

@@ -28,15 +28,15 @@ const tabData = [
   { id: "packages", label: "Packages", icon: Compass },
 ];
 
-export function DestinationPickerField({ placeholder = "Where to?" }) {
-  const [destination, setDestination] = React.useState("");
+export function LocationPickerField({ placeholder = "Where to?" }) {
+  const [location, setLocation] = React.useState("");
   const [open, setOpen] = React.useState(false);
   const [suggestions, setSuggestions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const isSelecting = React.useRef(false);
 
   React.useEffect(() => {
-    if (!destination || destination.length < 2 || isSelecting.current) {
+    if (!location || location.length < 2 || isSelecting.current) {
       isSelecting.current = false;
       setSuggestions([]);
       return;
@@ -46,7 +46,7 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
       setLoading(true);
       try {
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}&addressdetails=1&limit=6`,
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}&addressdetails=1&limit=6`,
         );
         const data = await response.json();
         setSuggestions(data);
@@ -58,11 +58,11 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
     }, 400);
 
     return () => clearTimeout(timer);
-  }, [destination]);
+  }, [location]);
 
   const handleSelect = (name) => {
     isSelecting.current = true;
-    setDestination(name);
+    setLocation(name);
     setSuggestions([]);
     setOpen(false);
   };
@@ -79,10 +79,10 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
           <input
             type="text"
             placeholder={placeholder}
-            value={destination}
+            value={location}
             onChange={(e) => {
               isSelecting.current = false;
-              setDestination(e.target.value);
+              setLocation(e.target.value);
               if (!open) setOpen(true);
             }}
             onFocus={() => setOpen(true)}
@@ -100,7 +100,7 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className="space-y-1">
-          {destination.length < 2 ? (
+          {location.length < 2 ? (
             <>
               <h4 className="font-bold text-[13px] text-muted-foreground uppercase tracking-wider mb-2 px-3 pt-2">
                 Popular Destinations
@@ -175,7 +175,7 @@ export function DestinationPickerField({ placeholder = "Where to?" }) {
                 ) : !loading ? (
                   <div className="p-8 text-center">
                     <p className="text-sm text-muted-foreground">
-                      No destinations found for "{destination}"
+                      No locations found for "{location}"
                     </p>
                   </div>
                 ) : null}
@@ -260,7 +260,10 @@ export function DateRangePickerField({ placeholder = "Add dates" }) {
   );
 }
 
-export function TravelerPickerField({ showFlightClass = false }) {
+export function TravelerPickerField({
+  showFlightClass = false,
+  summaryLabel = "Traveler",
+}) {
   const [adults, setAdults] = React.useState(2);
   const [children, setChildren] = React.useState(0);
   const [rooms, setRooms] = React.useState(1);
@@ -273,7 +276,7 @@ export function TravelerPickerField({ showFlightClass = false }) {
     "Business",
     "First class",
   ];
-  const summary = `${adults + children} Traveler${adults + children > 1 ? "s" : ""}, ${rooms} Room`;
+  const summary = `${adults + children} ${summaryLabel}${adults + children > 1 ? "s" : ""}, ${rooms} Room`;
 
   return (
     <Popover>
@@ -408,7 +411,7 @@ export default function SearchPanel() {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-5xl mx-auto bg-card p-4 md:p-6 rounded-[32px] shadow-2xl w-full">
+    <div className="max-w-6xl mx-auto bg-card p-4 md:p-8 rounded-[40px] shadow-2xl w-full border border-border/10">
       <Tabs defaultValue="flights" className="w-full">
         {/* Tabs List */}
         <div className="flex justify-center w-full mb-8">
@@ -426,93 +429,100 @@ export default function SearchPanel() {
           </TabsList>
         </div>
 
-        {/* Flights Content */}
         <TabsContent value="flights" className="mt-0 outline-none">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
-                Destination
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+                Departure
               </label>
-              <DestinationPickerField placeholder="Where to?" />
+              <LocationPickerField placeholder="From where?" />
             </div>
 
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+                Arrival
+              </label>
+              <LocationPickerField placeholder="To where?" />
+            </div>
+
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Dates
               </label>
               <DatePickerField placeholder="Add dates" />
             </div>
 
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
-                Travelers
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+                Passengers
               </label>
-              <TravelerPickerField showFlightClass={true} />
+              <TravelerPickerField
+                showFlightClass={true}
+                summaryLabel="Passenger"
+              />
             </div>
 
-            <div className="flex md:block pt-2 md:pt-0 h-full">
-              <Button
-                onClick={() => navigate("/flights")}
-                className="w-full h-[68px] md:h-full rounded-2xl text-lg md:text-xl font-bold bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-xl shadow-secondary/20 transition-transform active:scale-95"
-              >
-                Search Flights
+            <div className="md:col-span-2 pt-2">
+              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+                Submit Query
               </Button>
             </div>
           </div>
         </TabsContent>
 
-        {/* Hotels Content */}
         <TabsContent value="hotels" className="mt-0 outline-none">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Location
               </label>
-              <DestinationPickerField placeholder="Where are you staying?" />
+              <LocationPickerField placeholder="Where are you staying?" />
             </div>
 
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Check in - Check out
               </label>
               <DateRangePickerField placeholder="Add dates" />
             </div>
 
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Guests
               </label>
-              <TravelerPickerField showFlightClass={false} />
+              <TravelerPickerField
+                showFlightClass={false}
+                summaryLabel="Guest"
+              />
             </div>
 
-            <div className="flex md:block pt-2 md:pt-0 h-full">
-              <Button className="w-full h-[68px] md:h-full rounded-2xl text-lg md:text-xl font-bold bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-xl shadow-secondary/20 transition-transform active:scale-95">
-                Search Hotels
+            <div className="md:col-span-2 pt-2">
+              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+                Submit Query
               </Button>
             </div>
           </div>
         </TabsContent>
 
-        {/* Packages Content */}
         <TabsContent value="packages" className="mt-0 outline-none">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors col-span-1 md:col-span-2">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300 md:col-span-2">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Tour Destination
               </label>
-              <DestinationPickerField placeholder="Where do you want to explore?" />
+              <LocationPickerField placeholder="Where do you want to explore?" />
             </div>
 
-            <div className="bg-secondary/10 dark:bg-muted p-3 md:p-4 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border transition-colors">
-              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 px-1">
+            <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
+              <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Travel Month
               </label>
               <DatePickerField placeholder="Add dates" />
             </div>
 
-            <div className="flex md:block pt-2 md:pt-0 h-full">
-              <Button className="w-full h-[68px] md:h-full rounded-2xl text-lg md:text-xl font-bold bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-xl shadow-secondary/20 transition-transform active:scale-95">
-                Find Packages
+            <div className="md:col-span-2 pt-2">
+              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+                Submit Query
               </Button>
             </div>
           </div>

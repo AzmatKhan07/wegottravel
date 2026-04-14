@@ -4,11 +4,11 @@ import SearchPanel from "@/components/common/SearchPanel";
 
 function Hero() {
   return (
-    <div className="relative w-full h-[600px] md:h-[700px] flex flex-col items-center justify-center bg-muted overflow-hidden">
+    <div className="relative w-full h-[600px] md:h-[90vh] flex flex-col items-center justify-center bg-muted overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 w-full h-full">
         <img
-          src={assets.HeroSection}
+          src="https://images.unsplash.com/photo-1476610182048-b716b8518aae?auto=format&fit=crop&q=80&w=800"
           alt="Coastal town view"
           className="w-full h-full object-cover object-center"
         />

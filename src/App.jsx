@@ -8,6 +8,8 @@ import Hotel from "./pages/Hotel";
 import Package from "./pages/Package";
 import FlightDetails from "./pages/FlightDetails";
 import HotelDetails from "./pages/HotelDetails";
+import MakePayment from "./pages/MakePayment";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/hotels" element={<Hotel />} />
         <Route path="/hotels/:id" element={<HotelDetails />} />
         <Route path="/packages" element={<Package />} />
+        <Route path="/payment" element={<MakePayment />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
     </>

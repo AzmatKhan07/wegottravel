@@ -1,5 +1,10 @@
 import HeroSection from "./HeroSection.png";
 import { BadgeCheck, Headset, CalendarCheck } from "lucide-react";
+import Logo from "./logo.png";
+
+export const assets = {
+  Logo,
+};
 
 export const popularDestinations = [
   {
@@ -314,25 +319,31 @@ export const hotelRoomTypes = [
   {
     name: "Atelier Standard",
     price: 450,
-    image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800",
-    description: "Minimalist haven with caldera side-views. Includes private balcony and artisan coffee station.",
-    specs: "1 KING • 35 M² • FREE WIFI"
+    image:
+      "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&q=80&w=800",
+    description:
+      "Minimalist haven with caldera side-views. Includes private balcony and artisan coffee station.",
+    specs: "1 KING • 35 M² • FREE WIFI",
   },
   {
     name: "Aegean Deluxe",
     price: 720,
-    image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800",
-    description: "Uninterrupted panoramic views of the Caldera. Featuring a private heated plunge pool and indoor fireplace.",
+    image:
+      "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=800",
+    description:
+      "Uninterrupted panoramic views of the Caldera. Featuring a private heated plunge pool and indoor fireplace.",
     specs: "1 KING • PRIVATE POOL • FREE BREAKFAST",
-    popular: true
+    popular: true,
   },
   {
     name: "Infinity Penthouse",
     price: 1250,
-    image: "https://images.unsplash.com/photo-1590490359683-658d3d23f972?auto=format&fit=crop&q=80&w=800",
-    description: "The pinnacle of luxury. 120m² of space with private chef services and 360-degree sunset views.",
-    specs: "2 KING • PRIVATE CHEF • ALL-INCLUSIVE"
-  }
+    image:
+      "https://images.unsplash.com/photo-1590490359683-658d3d23f972?auto=format&fit=crop&q=80&w=800",
+    description:
+      "The pinnacle of luxury. 120m² of space with private chef services and 360-degree sunset views.",
+    specs: "2 KING • PRIVATE CHEF • ALL-INCLUSIVE",
+  },
 ];
 
 export const hotelDetailAmenities = [
@@ -519,4 +530,5 @@ export default {
   hotelDetailAmenities,
   packageResults,
   packageFilters,
+  assets,
 };

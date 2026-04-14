@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import assets from "@/assets/assets";
 import {
-  DestinationPickerField,
+  LocationPickerField,
   DatePickerField,
   TravelerPickerField,
 } from "@/components/common/SearchPanel";
@@ -25,7 +25,7 @@ function SearchSummaryBar() {
               Destination
             </span>
             {isEditing ? (
-              <DestinationPickerField placeholder="Where to?" />
+              <LocationPickerField placeholder="Where to?" />
             ) : (
               <span className="text-sm font-bold text-foreground px-1 truncate">
                 NYC to PAR
@@ -53,7 +53,7 @@ function SearchSummaryBar() {
               Travelers
             </span>
             {isEditing ? (
-              <TravelerPickerField showFlightClass={true} />
+              <TravelerPickerField showFlightClass={true} summaryLabel="Passenger" />
             ) : (
               <span className="text-sm font-bold text-foreground px-1 truncate">
                 1 Adult

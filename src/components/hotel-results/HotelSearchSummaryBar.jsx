@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import assets from "@/assets/assets";
 import {
-  DestinationPickerField,
+  LocationPickerField,
   DateRangePickerField,
   TravelerPickerField,
 } from "@/components/common/SearchPanel";
@@ -24,7 +24,7 @@ function HotelSearchSummaryBar() {
               Destination
             </span>
             {isEditing ? (
-              <DestinationPickerField placeholder="Where are you staying?" />
+              <LocationPickerField placeholder="Where are you staying?" />
             ) : (
                 <div className="flex items-center gap-2 px-1">
                     <Building className="w-3.5 h-3.5 text-primary" />
@@ -58,7 +58,7 @@ function HotelSearchSummaryBar() {
               Guests
             </span>
             {isEditing ? (
-              <TravelerPickerField showFlightClass={false} />
+              <TravelerPickerField showFlightClass={false} summaryLabel="Guest" />
             ) : (
                 <div className="flex items-center gap-2 px-1">
                     <Users className="w-3.5 h-3.5 text-primary" />
