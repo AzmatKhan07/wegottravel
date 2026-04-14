@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { sendEmail } from "@/lib/sendEmail";
 
 const Contact = () => {
+  const [fullName, setFullName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [subject, setSubject] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [status, setStatus] = React.useState({ state: "idle", text: "" });
+
   const contactInfo = [
     {
       icon: MapPin,
@@ -90,13 +97,43 @@ const Contact = () => {
                   <span className="w-12 h-1 bg-primary/20 rounded-full" />
                 </h2>
                 
-                <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                <form
+                  className="space-y-6"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (status.state === "sending") return;
+
+                    setStatus({ state: "sending", text: "Sending..." });
+                    try {
+                      await sendEmail({
+                        type: "contact",
+                        fullName,
+                        email,
+                        subject,
+                        message,
+                      });
+                      setStatus({ state: "sent", text: "Message sent successfully." });
+                      setFullName("");
+                      setEmail("");
+                      setSubject("");
+                      setMessage("");
+                    } catch (err) {
+                      setStatus({
+                        state: "error",
+                        text: err?.message || "Failed to send message.",
+                      });
+                    }
+                  }}
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-foreground/80 ml-1">Full Name</label>
                       <Input 
                         placeholder="John Doe" 
                         className="h-14 rounded-2xl border-border bg-secondary/5 focus:bg-background focus:ring-primary/20 transition-all font-semibold"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
                       />
                     </div>
                     <div className="space-y-2">
@@ -105,6 +142,9 @@ const Contact = () => {
                         type="email"
                         placeholder="john@example.com" 
                         className="h-14 rounded-2xl border-border bg-secondary/5 focus:bg-background focus:ring-primary/20 transition-all font-semibold"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
                       />
                     </div>
                   </div>
@@ -114,6 +154,9 @@ const Contact = () => {
                     <Input 
                       placeholder="How can we help you?" 
                       className="h-14 rounded-2xl border-border bg-secondary/5 focus:bg-background focus:ring-primary/20 transition-all font-semibold"
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      required
                     />
                   </div>
 
@@ -122,12 +165,35 @@ const Contact = () => {
                     <Textarea 
                       placeholder="Type your message here..." 
                       className="min-h-[180px] rounded-2xl border-border bg-secondary/5 focus:bg-background focus:ring-primary/20 transition-all font-semibold p-4 resize-none"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      required
                     />
                   </div>
 
-                  <Button className="w-full h-16 rounded-2xl text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3">
+                  {status.state !== "idle" && (
+                    <div
+                      className={`rounded-2xl px-4 py-3 text-sm font-bold ${
+                        status.state === "sent"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : status.state === "error"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-secondary/20 text-foreground"
+                      }`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {status.text}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={status.state === "sending"}
+                    className="w-full h-16 rounded-2xl text-lg font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-70"
+                  >
                     <Send className="w-5 h-5" />
-                    Send Message
+                    {status.state === "sending" ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </CardContent>

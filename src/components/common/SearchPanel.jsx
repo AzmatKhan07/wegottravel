@@ -4,6 +4,7 @@ import assets from "@/assets/assets";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar as CalendarUI } from "@/components/ui/calendar";
+import { sendEmail } from "@/lib/sendEmail";
 import {
   Popover,
   PopoverContent,
@@ -20,7 +21,7 @@ import {
   Compass,
 } from "lucide-react";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+ 
 
 const tabData = [
   { id: "flights", label: "Flights", icon: Plane },
@@ -28,12 +29,21 @@ const tabData = [
   { id: "packages", label: "Packages", icon: Compass },
 ];
 
-export function LocationPickerField({ placeholder = "Where to?" }) {
-  const [location, setLocation] = React.useState("");
+export function LocationPickerField({
+  placeholder = "Where to?",
+  value,
+  onChange,
+}) {
+  const [location, setLocation] = React.useState(value ?? "");
   const [open, setOpen] = React.useState(false);
   const [suggestions, setSuggestions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const isSelecting = React.useRef(false);
+
+  React.useEffect(() => {
+    if (typeof value === "string" && value !== location) setLocation(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   React.useEffect(() => {
     if (!location || location.length < 2 || isSelecting.current) {
@@ -63,6 +73,7 @@ export function LocationPickerField({ placeholder = "Where to?" }) {
   const handleSelect = (name) => {
     isSelecting.current = true;
     setLocation(name);
+    onChange?.(name);
     setSuggestions([]);
     setOpen(false);
   };
@@ -82,7 +93,9 @@ export function LocationPickerField({ placeholder = "Where to?" }) {
             value={location}
             onChange={(e) => {
               isSelecting.current = false;
-              setLocation(e.target.value);
+              const next = e.target.value;
+              setLocation(next);
+              onChange?.(next);
               if (!open) setOpen(true);
             }}
             onFocus={() => setOpen(true)}
@@ -188,8 +201,17 @@ export function LocationPickerField({ placeholder = "Where to?" }) {
   );
 }
 
-export function DatePickerField({ placeholder = "Add dates" }) {
-  const [date, setDate] = React.useState();
+export function DatePickerField({
+  placeholder = "Add dates",
+  value,
+  onChange,
+}) {
+  const [date, setDate] = React.useState(value);
+
+  React.useEffect(() => {
+    if (value !== date) setDate(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <Popover>
@@ -210,7 +232,10 @@ export function DatePickerField({ placeholder = "Add dates" }) {
         <CalendarUI
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(next) => {
+            setDate(next);
+            onChange?.(next);
+          }}
           initialFocus
         />
       </PopoverContent>
@@ -218,8 +243,17 @@ export function DatePickerField({ placeholder = "Add dates" }) {
   );
 }
 
-export function DateRangePickerField({ placeholder = "Add dates" }) {
-  const [date, setDate] = React.useState();
+export function DateRangePickerField({
+  placeholder = "Add dates",
+  value,
+  onChange,
+}) {
+  const [date, setDate] = React.useState(value);
+
+  React.useEffect(() => {
+    if (value !== date) setDate(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <Popover>
@@ -252,7 +286,10 @@ export function DateRangePickerField({ placeholder = "Add dates" }) {
           mode="range"
           defaultMonth={date?.from}
           selected={date}
-          onSelect={setDate}
+          onSelect={(next) => {
+            setDate(next);
+            onChange?.(next);
+          }}
           numberOfMonths={2}
         />
       </PopoverContent>
@@ -263,11 +300,35 @@ export function DateRangePickerField({ placeholder = "Add dates" }) {
 export function TravelerPickerField({
   showFlightClass = false,
   summaryLabel = "Traveler",
+  value,
+  onChange,
 }) {
-  const [adults, setAdults] = React.useState(2);
-  const [children, setChildren] = React.useState(0);
-  const [rooms, setRooms] = React.useState(1);
-  const [flightClass, setFlightClass] = React.useState("Any class");
+  const [adults, setAdults] = React.useState(value?.adults ?? 2);
+  const [children, setChildren] = React.useState(value?.children ?? 0);
+  const [rooms, setRooms] = React.useState(value?.rooms ?? 1);
+  const [flightClass, setFlightClass] = React.useState(
+    value?.flightClass ?? "Any class",
+  );
+
+  React.useEffect(() => {
+    if (!value) return;
+    if (typeof value.adults === "number") setAdults(value.adults);
+    if (typeof value.children === "number") setChildren(value.children);
+    if (typeof value.rooms === "number") setRooms(value.rooms);
+    if (typeof value.flightClass === "string") setFlightClass(value.flightClass);
+  }, [value]);
+
+  const emit = React.useCallback(
+    (next) => {
+      onChange?.({
+        adults: next.adults ?? adults,
+        children: next.children ?? children,
+        rooms: next.rooms ?? rooms,
+        flightClass: next.flightClass ?? flightClass,
+      });
+    },
+    [adults, children, rooms, flightClass, onChange],
+  );
 
   const classes = [
     "Any class",
@@ -316,7 +377,11 @@ export function TravelerPickerField({
                   variant="outline"
                   size="icon"
                   className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors"
-                  onClick={() => setAdults(Math.max(1, adults - 1))}
+                  onClick={() => {
+                    const next = Math.max(1, adults - 1);
+                    setAdults(next);
+                    emit({ adults: next });
+                  }}
                   disabled={adults <= 1}
                 >
                   <Minus className="h-4 w-4" />
@@ -328,7 +393,11 @@ export function TravelerPickerField({
                   variant="outline"
                   size="icon"
                   className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors"
-                  onClick={() => setAdults(adults + 1)}
+                  onClick={() => {
+                    const next = adults + 1;
+                    setAdults(next);
+                    emit({ adults: next });
+                  }}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -348,7 +417,11 @@ export function TravelerPickerField({
                   variant="outline"
                   size="icon"
                   className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors"
-                  onClick={() => setChildren(Math.max(0, children - 1))}
+                  onClick={() => {
+                    const next = Math.max(0, children - 1);
+                    setChildren(next);
+                    emit({ children: next });
+                  }}
                   disabled={children === 0}
                 >
                   <Minus className="h-4 w-4" />
@@ -360,7 +433,11 @@ export function TravelerPickerField({
                   variant="outline"
                   size="icon"
                   className="h-9 w-9 rounded-full border-border hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors"
-                  onClick={() => setChildren(children + 1)}
+                  onClick={() => {
+                    const next = children + 1;
+                    setChildren(next);
+                    emit({ children: next });
+                  }}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -370,7 +447,11 @@ export function TravelerPickerField({
             <Button
               variant="outline"
               className="w-full h-12 rounded-xl text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground hover:border-primary font-bold transition-all duration-300"
-              onClick={() => setRooms(rooms + 1)}
+              onClick={() => {
+                const next = rooms + 1;
+                setRooms(next);
+                emit({ rooms: next });
+              }}
             >
               Add a room
             </Button>
@@ -387,7 +468,10 @@ export function TravelerPickerField({
                   {classes.map((cls) => (
                     <button
                       key={cls}
-                      onClick={() => setFlightClass(cls)}
+                      onClick={() => {
+                        setFlightClass(cls);
+                        emit({ flightClass: cls });
+                      }}
                       className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-200 ${
                         flightClass === cls
                           ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105 border border-primary"
@@ -408,7 +492,40 @@ export function TravelerPickerField({
 }
 
 export default function SearchPanel() {
-  const navigate = useNavigate();
+  const [status, setStatus] = React.useState({ state: "idle", text: "" });
+
+  const [flight, setFlight] = React.useState({
+    departure: "",
+    arrival: "",
+    date: null,
+    travelers: { adults: 2, children: 0, rooms: 1, flightClass: "Any class" },
+  });
+  const [hotel, setHotel] = React.useState({
+    location: "",
+    dates: null,
+    guests: { adults: 2, children: 0, rooms: 1 },
+  });
+  const [pkg, setPkg] = React.useState({
+    destination: "",
+    month: null,
+  });
+
+  const sendQuery = React.useCallback(
+    async (payload) => {
+      if (status.state === "sending") return;
+      setStatus({ state: "sending", text: "Sending query..." });
+      try {
+        await sendEmail(payload);
+        setStatus({ state: "sent", text: "Query sent — we’ll contact you soon." });
+      } catch (err) {
+        setStatus({
+          state: "error",
+          text: err?.message || "Failed to send query.",
+        });
+      }
+    },
+    [status.state],
+  );
 
   return (
     <div className="max-w-6xl mx-auto bg-card p-4 md:p-8 rounded-[40px] shadow-2xl w-full border border-border/10">
@@ -435,21 +552,35 @@ export default function SearchPanel() {
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Departure
               </label>
-              <LocationPickerField placeholder="From where?" />
+              <LocationPickerField
+                placeholder="From where?"
+                value={flight.departure}
+                onChange={(departure) =>
+                  setFlight((s) => ({ ...s, departure }))
+                }
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Arrival
               </label>
-              <LocationPickerField placeholder="To where?" />
+              <LocationPickerField
+                placeholder="To where?"
+                value={flight.arrival}
+                onChange={(arrival) => setFlight((s) => ({ ...s, arrival }))}
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Dates
               </label>
-              <DatePickerField placeholder="Add dates" />
+              <DatePickerField
+                placeholder="Add dates"
+                value={flight.date}
+                onChange={(date) => setFlight((s) => ({ ...s, date }))}
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
@@ -459,11 +590,25 @@ export default function SearchPanel() {
               <TravelerPickerField
                 showFlightClass={true}
                 summaryLabel="Passenger"
+                value={flight.travelers}
+                onChange={(travelers) => setFlight((s) => ({ ...s, travelers }))}
               />
             </div>
 
             <div className="md:col-span-2 pt-2">
-              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+              <Button
+                type="button"
+                disabled={status.state === "sending"}
+                onClick={() =>
+                  sendQuery({
+                    type: "query",
+                    tab: "flights",
+                    ...flight,
+                    date: flight.date ? format(flight.date, "PPP") : "",
+                  })
+                }
+                className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] disabled:opacity-70"
+              >
                 Submit Query
               </Button>
             </div>
@@ -476,14 +621,22 @@ export default function SearchPanel() {
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Location
               </label>
-              <LocationPickerField placeholder="Where are you staying?" />
+              <LocationPickerField
+                placeholder="Where are you staying?"
+                value={hotel.location}
+                onChange={(location) => setHotel((s) => ({ ...s, location }))}
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Check in - Check out
               </label>
-              <DateRangePickerField placeholder="Add dates" />
+              <DateRangePickerField
+                placeholder="Add dates"
+                value={hotel.dates}
+                onChange={(dates) => setHotel((s) => ({ ...s, dates }))}
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
@@ -493,11 +646,29 @@ export default function SearchPanel() {
               <TravelerPickerField
                 showFlightClass={false}
                 summaryLabel="Guest"
+                value={hotel.guests}
+                onChange={(guests) => setHotel((s) => ({ ...s, guests }))}
               />
             </div>
 
             <div className="md:col-span-2 pt-2">
-              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+              <Button
+                type="button"
+                disabled={status.state === "sending"}
+                onClick={() => {
+                  const from = hotel.dates?.from
+                    ? format(hotel.dates.from, "PPP")
+                    : "";
+                  const to = hotel.dates?.to ? format(hotel.dates.to, "PPP") : "";
+                  return sendQuery({
+                    type: "query",
+                    tab: "hotels",
+                    ...hotel,
+                    dates: { from, to },
+                  });
+                }}
+                className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] disabled:opacity-70"
+              >
                 Submit Query
               </Button>
             </div>
@@ -510,24 +681,60 @@ export default function SearchPanel() {
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Tour Destination
               </label>
-              <LocationPickerField placeholder="Where do you want to explore?" />
+              <LocationPickerField
+                placeholder="Where do you want to explore?"
+                value={pkg.destination}
+                onChange={(destination) => setPkg((s) => ({ ...s, destination }))}
+              />
             </div>
 
             <div className="bg-secondary/10 dark:bg-muted p-4 md:p-5 rounded-2xl flex flex-col justify-center border border-transparent hover:border-border/50 transition-all duration-300">
               <label className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
                 Travel Month
               </label>
-              <DatePickerField placeholder="Add dates" />
+              <DatePickerField
+                placeholder="Add dates"
+                value={pkg.month}
+                onChange={(month) => setPkg((s) => ({ ...s, month }))}
+              />
             </div>
 
             <div className="md:col-span-2 pt-2">
-              <Button className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98]">
+              <Button
+                type="button"
+                disabled={status.state === "sending"}
+                onClick={() =>
+                  sendQuery({
+                    type: "query",
+                    tab: "packages",
+                    destination: pkg.destination,
+                    month: pkg.month ? format(pkg.month, "PPP") : "",
+                  })
+                }
+                className="w-full h-16 md:h-18 rounded-2xl text-lg md:text-xl font-black bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl shadow-primary/20 transition-all transform active:scale-[0.98] disabled:opacity-70"
+              >
                 Submit Query
               </Button>
             </div>
           </div>
         </TabsContent>
       </Tabs>
+
+      {status.state !== "idle" && (
+        <div
+          className={`mt-6 rounded-2xl px-4 py-3 text-sm font-bold ${
+            status.state === "sent"
+              ? "bg-emerald-50 text-emerald-700"
+              : status.state === "error"
+                ? "bg-red-50 text-red-700"
+                : "bg-secondary/20 text-foreground"
+          }`}
+          role="status"
+          aria-live="polite"
+        >
+          {status.text}
+        </div>
+      )}
     </div>
   );
 }
